@@ -1,14 +1,14 @@
 package com.decade.usercenter.service.service.impl;
 
-import java.util.Date;
-
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.decade.usercenter.constant.UserConstant;
 import com.decade.usercenter.model.domain.User;
 import com.decade.usercenter.service.service.UserService;
-import com.decade.usercenter.mapper.mapper.UserMapper;
+import com.decade.usercenter.mapper.UserMapper;
 
+import com.decade.usercenter.utils.UserUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,7 +36,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
      * 盐值
      */
     private static final String SALT = "abcd";
-    private static final String USER_LOGIN_STATE = "USER_LOGIN_STATE";
 
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword) {
@@ -80,7 +80,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     public User doLoginIn(String userAccount, String userPassword, HttpServletRequest request) {
         // 1.校验
         if (StringUtils.isAnyBlank(userAccount, userAccount)) {
-            // TODO 修改为异常逻辑
+            // 修改为异常逻辑
             return null;
         }
         if (userAccount.length() < 4) {
@@ -107,20 +107,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             return null;
         }
         // 用户脱敏
-        User safetyUser = new User();
-        safetyUser.setId(user.getId());
-        safetyUser.setUserName(user.getUserName());
-        safetyUser.setUserAccount(user.getUserAccount());
-        safetyUser.setAvatarUrl(user.getAvatarUrl());
-        safetyUser.setGender(user.getGender());
-        safetyUser.setPhone(user.getPhone());
-        safetyUser.setEmail(user.getEmail());
-        safetyUser.setUserStatus(user.getUserStatus());
-        safetyUser.setCreateTime(user.getCreateTime());
+        User safetyUser = UserUtil.getSafeUser(user);
         // 记录用户登录状态
-        request.getSession().setAttribute(USER_LOGIN_STATE, safetyUser);
+        request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, safetyUser);
         return safetyUser;
 
+    }
+
+    @Override
+    public List<User> queryUser(String userName) {
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        // 模糊查询
+        if (StringUtils.isNotBlank(userName)) {
+            userQueryWrapper.like("userName", userName);
+        }
+        return userMapper.selectList(userQueryWrapper);
     }
 }
 

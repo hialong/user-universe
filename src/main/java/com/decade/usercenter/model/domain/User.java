@@ -3,6 +3,7 @@ package com.decade.usercenter.model.domain;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
@@ -62,6 +63,11 @@ public class User implements Serializable {
     private Integer userStatus;
 
     /**
+     * status 0 -normal 9-superAdmin
+     */
+    private Integer userRole;
+
+    /**
      * 
      */
     private Date updateTime;
@@ -74,6 +80,7 @@ public class User implements Serializable {
     /**
      * isDelete
      */
+    @TableLogic
     private Integer flag;
 
     @TableField(exist = false)

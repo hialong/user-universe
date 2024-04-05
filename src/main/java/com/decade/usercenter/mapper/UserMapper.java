@@ -1,4 +1,4 @@
-package com.decade.usercenter.mapper.mapper;
+package com.decade.usercenter.mapper;
 
 import com.decade.usercenter.model.domain.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;

@@ -4,6 +4,8 @@ import com.decade.usercenter.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.util.List;
+
 /**
  * 用户服务
  *
@@ -29,4 +31,11 @@ public interface UserService extends IService<User> {
      * @return user 用户对象
      */
     User doLoginIn(String userAccount, String userPassword, HttpServletRequest request);
+
+    /**
+     * 查询用户，模糊查询
+     * @param userName userName
+     * @return 用户列表
+     */
+    List<User> queryUser(String userName);
 }
