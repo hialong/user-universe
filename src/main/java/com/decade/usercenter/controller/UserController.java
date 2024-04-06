@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @Slf4j
+@RequestMapping("/user")
 public class UserController {
 
     @Resource
@@ -101,6 +103,25 @@ public class UserController {
             return false;
         }
         return userService.removeById(id);
+    }
+
+    /**
+     * 获取用户信息
+     * 实现：如果用户信息变更比较频繁则需要查表来确定用户信息
+     * 另外要注意判断用户状态，后续如果有用户状态封号的，也要做相应的返回
+     *
+     * @param request 请求
+     * @return 最新的用户信息
+     */
+    @GetMapping("/currentUser")
+    public User getCurrentUser(HttpServletRequest request){
+        // 获取当前用户信息
+        User userObj = (User) request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        if(userObj == null){
+            return null;
+        }
+        // TODO 校验用户是否合法
+        return UserUtil.getSafeUser(userService.getById(userObj.getId()));
     }
 
     /**

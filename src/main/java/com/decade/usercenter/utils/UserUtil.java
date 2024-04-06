@@ -8,6 +8,9 @@ public class UserUtil {
      * @return safeUser数据
      */
     public static User getSafeUser(User user){
+        if(user == null){
+            return null;
+        }
         User safetyUser = new User();
         safetyUser.setId(user.getId());
         safetyUser.setUserName(user.getUserName());

@@ -11,6 +11,8 @@ spring:
     timeout: 84600
 server:
   port: 8881
+  servlet:
+    context-path: /api #指定所有请求前缀加上/api
 
 mybatis-plus:
   configuration:
