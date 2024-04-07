@@ -18,6 +18,11 @@
             <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
             <result property="flag" column="flag" jdbcType="TINYINT"/>
             <result property="userRole" column="userRole" jdbcType="INTEGER"/>
+            <result property="specialCode" column="specialCode" jdbcType="VARCHAR"/>
+            <result property="score" column="score" jdbcType="BIGINT"/>
+            <result property="extend_1" column="extend_1" jdbcType="VARCHAR"/>
+            <result property="extend_2" column="extend_2" jdbcType="VARCHAR"/>
+            <result property="extend_3" column="extend_3" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -25,6 +30,7 @@
         avatarUrl,gender,userPassword,
         phone,email,UserStatus,
         updateTime,createTime,flag,
-        userRole
+        userRole,specialCode,score,
+        extend_1,extend_2,extend_3
     </sql>
 </mapper>

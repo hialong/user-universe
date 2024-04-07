@@ -48,10 +48,14 @@ public class UserController {
         String userAccount = userRegisterRequest.getUserAccount();
         String userPassword = userRegisterRequest.getUserPassword();
         String checkPassword = userRegisterRequest.getCheckPassword();
+        String specialCode = userRegisterRequest.getSpecialCode();
+        if(specialCode == null){
+            specialCode = UserConstant.NORMAL_SPECIAL_CODE;
+        }
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
             return null;
         }
-        return userService.userRegister(userAccount, userPassword, checkPassword);
+        return userService.userRegister(userAccount, userPassword, checkPassword,specialCode);
     }
 
     /**
@@ -68,10 +72,26 @@ public class UserController {
         }
         String userAccount = userLoginRequest.getUserAccount();
         String userPassword = userLoginRequest.getUserPassword();
+
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
             return null;
         }
         return userService.doLoginIn(userAccount, userPassword, request);
+    }
+
+    /**
+     * 用户登出
+     *
+     * @param request http请求
+     * @return 用户登出状态，1正常登出
+     */
+    @PostMapping("/logOut")
+    public Integer userLogOut(HttpServletRequest request) {
+        if (request == null) {
+            return null;
+        }
+
+        return userService.userLogOut(request);
     }
 
     /**
@@ -123,6 +143,9 @@ public class UserController {
         // TODO 校验用户是否合法
         return UserUtil.getSafeUser(userService.getById(userObj.getId()));
     }
+
+
+
 
     /**
      * 用户鉴权，后续可以通过数据库控参修改成不同接口不同权限

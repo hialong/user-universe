@@ -6,6 +6,8 @@ public interface UserConstant {
      */
     String USER_LOGIN_STATE = "USER_LOGIN_STATE";
 
+    String NORMAL_SPECIAL_CODE = "0";
+
     // ------------------------用户权限--------------------------------
     /**
      * 普通用户

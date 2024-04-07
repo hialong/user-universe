@@ -83,6 +83,30 @@ public class User implements Serializable {
     @TableLogic
     private Integer flag;
 
+    /**
+     * 特别编号，注册时使用，校验
+     */
+    private String specialCode;
+    /**
+     * 用户等级积分
+     */
+    private Long score;
+
+    /**
+     * 扩展字段
+     */
+    private String extend_1;
+
+    /**
+     * 扩展字段
+     */
+    private String extend_2;
+
+    /**
+     * 扩展字段
+     */
+    private String extend_3;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

@@ -2,6 +2,7 @@ package com.decade.usercenter.service.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.decade.usercenter.constant.UserConstant;
 import com.decade.usercenter.model.domain.User;
@@ -38,7 +39,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     private static final String SALT = "abcd";
 
     @Override
-    public long userRegister(String userAccount, String userPassword, String checkPassword) {
+    public long userRegister(String userAccount, String userPassword, String checkPassword,String specialCode) {
         // 1.校验
         if (StringUtils.isAnyBlank(userAccount, userAccount, checkPassword)) {
             return -1;
@@ -56,6 +57,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (!matcher.find()) {
             return -1;
         }
+
+
         // 账户不能重复 （后查表）
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.eq("userAccount", userAccount);
@@ -72,6 +75,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         boolean save = save(user);
         if (!save) {
             return -1;
+        }
+        //邀请码功能待完善，反向推导邀请用户，然后给邀请用户加分或者记录,注册成功后再操作
+        if(!specialCode.equals(UserConstant.NORMAL_SPECIAL_CODE)){
+            QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("specialCode",specialCode);
+            // 注意这里要保证只查到一个，查到多个默认拿第一个
+            List<User> users = userMapper.selectList(queryWrapper);
+            if (users.size() != 1){
+                log.error("邀请码错误");
+                return -1;
+            }
+            User inviteUser = users.get(0);
+            UpdateWrapper<User> userUpdateWrapper = new UpdateWrapper<>();
+            userUpdateWrapper.eq("id",inviteUser.getId());
+            userUpdateWrapper.set("score",inviteUser.getScore()+1);
+            update(userUpdateWrapper);
         }
         return user.getId();
     }
@@ -122,6 +141,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             userQueryWrapper.like("userName", userName);
         }
         return userMapper.selectList(userQueryWrapper);
+    }
+
+    @Override
+    public int userLogOut(HttpServletRequest request) {
+        request.getSession().removeAttribute(UserConstant.USER_LOGIN_STATE);
+        return 1;
     }
 }
 

@@ -22,6 +22,7 @@ public class UserUtil {
         safetyUser.setUserStatus(user.getUserStatus());
         safetyUser.setCreateTime(user.getCreateTime());
         safetyUser.setUserRole(user.getUserRole());
+        safetyUser.setSpecialCode(user.getSpecialCode());
         return safetyUser;
     }
 }

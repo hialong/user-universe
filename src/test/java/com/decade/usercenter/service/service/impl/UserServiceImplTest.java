@@ -52,29 +52,29 @@ public class UserServiceImplTest {
         String userAccount = "hailong";
         String userPassword = "";
         String checkPassword = "12345678";
-        long result = userService.userRegister(userAccount, userPassword, checkPassword);
+        long result = userService.userRegister(userAccount, userPassword, checkPassword,"0");
         Assertions.assertEquals(-1, result);
         userAccount = "c";
-        result = userService.userRegister(userAccount, userPassword, checkPassword);
+        result = userService.userRegister(userAccount, userPassword, checkPassword,"0");
         Assertions.assertEquals(-1, result);
         userPassword = "1234567";
         checkPassword = "1234567";
-        result = userService.userRegister(userAccount, userPassword, checkPassword);
+        result = userService.userRegister(userAccount, userPassword, checkPassword,"0");
         Assertions.assertEquals(-1, result);
         userPassword = "12345678";
         checkPassword = "12345678";
         userAccount = "admin";
-        result = userService.userRegister(userAccount, userPassword, checkPassword);
+        result = userService.userRegister(userAccount, userPassword, checkPassword,"0");
         Assertions.assertEquals(-1, result);
         userAccount = "c   h  l";
-        result = userService.userRegister(userAccount, userPassword, checkPassword);
+        result = userService.userRegister(userAccount, userPassword, checkPassword,"0");
         Assertions.assertEquals(-1, result);
         checkPassword = "123456789";
-        result = userService.userRegister(userAccount, userPassword, checkPassword);
+        result = userService.userRegister(userAccount, userPassword, checkPassword,"0");
         Assertions.assertEquals(-1, result);
         checkPassword = "12345678";
-        userAccount = "hailong";
-        result = userService.userRegister(userAccount, userPassword, checkPassword);
+        userAccount = "hailong111";
+        result = userService.userRegister(userAccount, userPassword, checkPassword,"0");
         Assertions.assertTrue(result > 0);
     }
 }
