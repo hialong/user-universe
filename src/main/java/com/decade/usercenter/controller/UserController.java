@@ -1,6 +1,10 @@
 package com.decade.usercenter.controller;
 
+import com.decade.usercenter.common.BaseResponse;
+import com.decade.usercenter.common.ErrorCode;
+import com.decade.usercenter.common.ResponseUtil;
 import com.decade.usercenter.constant.UserConstant;
+import com.decade.usercenter.exception.BussinessException;
 import com.decade.usercenter.model.domain.User;
 import com.decade.usercenter.model.request.UserLoginRequest;
 import com.decade.usercenter.model.request.UserRegisterRequest;
@@ -17,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,9 +44,9 @@ public class UserController {
      * @return 注册成功用户id
      */
     @PostMapping("/register")
-    public Long userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
+    public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
         if (userRegisterRequest == null) {
-            return null;
+            throw new BussinessException(ErrorCode.NULL_PARAMS,"null request");
         }
         String userAccount = userRegisterRequest.getUserAccount();
         String userPassword = userRegisterRequest.getUserPassword();
@@ -55,7 +58,8 @@ public class UserController {
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
             return null;
         }
-        return userService.userRegister(userAccount, userPassword, checkPassword,specialCode);
+        Long result = userService.userRegister(userAccount, userPassword, checkPassword, specialCode);
+        return ResponseUtil.ok(result);
     }
 
     /**
@@ -66,17 +70,18 @@ public class UserController {
      * @return 返回脱敏登录用户
      */
     @PostMapping("/login")
-    public User userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+    public BaseResponse<User> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
-            return null;
+            throw new BussinessException(ErrorCode.NULL_PARAMS,"null request");
         }
         String userAccount = userLoginRequest.getUserAccount();
         String userPassword = userLoginRequest.getUserPassword();
 
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
-            return null;
+            throw new BussinessException(ErrorCode.NULL_PARAMS);
         }
-        return userService.doLoginIn(userAccount, userPassword, request);
+        User user = userService.doLoginIn(userAccount, userPassword, request);
+        return ResponseUtil.ok(user);
     }
 
     /**
@@ -85,13 +90,13 @@ public class UserController {
      * @param request http请求
      * @return 用户登出状态，1正常登出
      */
-    @PostMapping("/logOut")
-    public Integer userLogOut(HttpServletRequest request) {
+    @PostMapping("/logout")
+    public BaseResponse<Integer> userLogOut(HttpServletRequest request) {
         if (request == null) {
-            return null;
+            throw new BussinessException(ErrorCode.NULL_PARAMS,"null request");
         }
-
-        return userService.userLogOut(request);
+        int i = userService.userlogout(request);
+        return ResponseUtil.ok(i);
     }
 
     /**
@@ -101,14 +106,16 @@ public class UserController {
      * @return 用户列表
      */
     @GetMapping("/query")
-    public List<User> queryUser(String userName, HttpServletRequest request) {
+    public BaseResponse<List<User>> queryUser(String userName, HttpServletRequest request) {
+        
         if (!checkAuth(request, null)) {
-            log.info("实际上应该check里面报异常，后续修改");
-            return new ArrayList<>();
+            log.info("{}",request);
+            throw new BussinessException(ErrorCode.NO_AUTH);
         }
         // 查询数据应当脱敏,暂时这么写，后续有其他敏感信息要写工具类
         List<User> users = userService.queryUser(userName);
-        return users.stream().map(UserUtil::getSafeUser).collect(Collectors.toList());
+        List<User> collect = users.stream().map(UserUtil::getSafeUser).collect(Collectors.toList());
+        return ResponseUtil.ok(collect);
     }
 
     /**
@@ -118,11 +125,15 @@ public class UserController {
      * @return 是否删除成功
      */
     @PostMapping("/delete")
-    public boolean deleteUser(@RequestBody long id, HttpServletRequest request) {
-        if (id <= 0 || !checkAuth(request, null)) {
-            return false;
+    public BaseResponse<Boolean> deleteUser(@RequestBody long id, HttpServletRequest request) {
+        if (id <= 0 ) {
+            throw new BussinessException(ErrorCode.INVALID_PARAMS,"invalid id {}",id);
         }
-        return userService.removeById(id);
+        if (!checkAuth(request, null)) {
+            throw new BussinessException(ErrorCode.NO_AUTH);
+        }
+        Boolean removeFlag = userService.removeById(id);
+        return ResponseUtil.ok(removeFlag);
     }
 
     /**
@@ -134,14 +145,15 @@ public class UserController {
      * @return 最新的用户信息
      */
     @GetMapping("/currentUser")
-    public User getCurrentUser(HttpServletRequest request){
+    public BaseResponse<User> getCurrentUser(HttpServletRequest request){
         // 获取当前用户信息
         User userObj = (User) request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
         if(userObj == null){
-            return null;
+            throw new BussinessException(ErrorCode.NOT_LOGIN);
         }
         // TODO 校验用户是否合法
-        return UserUtil.getSafeUser(userService.getById(userObj.getId()));
+        User safeUser = UserUtil.getSafeUser(userService.getById(userObj.getId()));
+        return ResponseUtil.ok(safeUser);
     }
 
 
