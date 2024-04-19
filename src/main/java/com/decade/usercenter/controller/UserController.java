@@ -151,7 +151,7 @@ public class UserController {
         if(userObj == null){
             throw new BussinessException(ErrorCode.NOT_LOGIN);
         }
-        // TODO 校验用户是否合法
+        // TODO 校验用户是否合法，根据用户status之类做黑名单判断
         User safeUser = UserUtil.getSafeUser(userService.getById(userObj.getId()));
         return ResponseUtil.ok(safeUser);
     }
