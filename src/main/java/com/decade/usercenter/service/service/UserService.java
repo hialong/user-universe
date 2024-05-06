@@ -1,7 +1,9 @@
 package com.decade.usercenter.service.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.decade.usercenter.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.github.pagehelper.PageInfo;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
@@ -44,4 +46,6 @@ public interface UserService extends IService<User> {
      * @param request 请求
      */
     int userlogout(HttpServletRequest request);
+
+    PageInfo<User> queryUserByPage(User user, Integer pageNum, Integer pageSize);
 }

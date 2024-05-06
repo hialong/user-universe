@@ -1,5 +1,6 @@
 package com.decade.usercenter.controller;
 
+
 import com.decade.usercenter.common.BaseResponse;
 import com.decade.usercenter.common.ErrorCode;
 import com.decade.usercenter.common.ResponseUtil;
@@ -10,15 +11,18 @@ import com.decade.usercenter.model.request.UserLoginRequest;
 import com.decade.usercenter.model.request.UserRegisterRequest;
 import com.decade.usercenter.service.service.UserService;
 import com.decade.usercenter.utils.UserUtil;
+import com.github.pagehelper.PageInfo;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -46,13 +50,13 @@ public class UserController {
     @PostMapping("/register")
     public BaseResponse<Long> userRegister(@RequestBody UserRegisterRequest userRegisterRequest) {
         if (userRegisterRequest == null) {
-            throw new BussinessException(ErrorCode.NULL_PARAMS,"null request");
+            throw new BussinessException(ErrorCode.NULL_PARAMS, "null request");
         }
         String userAccount = userRegisterRequest.getUserAccount();
         String userPassword = userRegisterRequest.getUserPassword();
         String checkPassword = userRegisterRequest.getCheckPassword();
         String specialCode = userRegisterRequest.getSpecialCode();
-        if(specialCode == null){
+        if (specialCode == null) {
             specialCode = UserConstant.NORMAL_SPECIAL_CODE;
         }
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword)) {
@@ -72,7 +76,7 @@ public class UserController {
     @PostMapping("/login")
     public BaseResponse<User> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         if (userLoginRequest == null) {
-            throw new BussinessException(ErrorCode.NULL_PARAMS,"null request");
+            throw new BussinessException(ErrorCode.NULL_PARAMS, "null request");
         }
         String userAccount = userLoginRequest.getUserAccount();
         String userPassword = userLoginRequest.getUserPassword();
@@ -93,7 +97,7 @@ public class UserController {
     @PostMapping("/logout")
     public BaseResponse<Integer> userLogOut(HttpServletRequest request) {
         if (request == null) {
-            throw new BussinessException(ErrorCode.NULL_PARAMS,"null request");
+            throw new BussinessException(ErrorCode.NULL_PARAMS, "null request");
         }
         int i = userService.userlogout(request);
         return ResponseUtil.ok(i);
@@ -107,15 +111,37 @@ public class UserController {
      */
     @GetMapping("/query")
     public BaseResponse<List<User>> queryUser(String userName, HttpServletRequest request) {
-        
+
         if (!checkAuth(request, null)) {
-            log.info("{}",request);
+            log.info("{}", request);
             throw new BussinessException(ErrorCode.NO_AUTH);
         }
         // 查询数据应当脱敏,暂时这么写，后续有其他敏感信息要写工具类
         List<User> users = userService.queryUser(userName);
         List<User> collect = users.stream().map(UserUtil::getSafeUser).collect(Collectors.toList());
         return ResponseUtil.ok(collect);
+    }
+
+    /**
+     * 分页查询
+     *
+     * @param user     user
+     * @param pageNum  页码
+     * @param pageSize 页面大小
+     * @param request  请求（用来鉴权）
+     * @return 分页对象
+     */
+    @PostMapping("/queryByPage")
+    public BaseResponse<PageInfo<User>> queryUserByPage(@RequestBody User user,
+                                                        @RequestParam("pageNum") Integer pageNum,
+                                                        @RequestParam("pageSize") Integer pageSize,
+                                                        HttpServletRequest request) {
+        if (!checkAuth(request, null)) {
+            log.info("{}", request);
+            throw new BussinessException(ErrorCode.NO_AUTH);
+        }
+        PageInfo<User> userByPage = userService.queryUserByPage(user, pageNum, pageSize);
+        return ResponseUtil.ok(userByPage);
     }
 
     /**
@@ -126,8 +152,8 @@ public class UserController {
      */
     @PostMapping("/delete")
     public BaseResponse<Boolean> deleteUser(@RequestBody long id, HttpServletRequest request) {
-        if (id <= 0 ) {
-            throw new BussinessException(ErrorCode.INVALID_PARAMS,"invalid id {}",id);
+        if (id <= 0) {
+            throw new BussinessException(ErrorCode.INVALID_PARAMS, "invalid id {}", id);
         }
         if (!checkAuth(request, null)) {
             throw new BussinessException(ErrorCode.NO_AUTH);
@@ -145,18 +171,16 @@ public class UserController {
      * @return 最新的用户信息
      */
     @GetMapping("/currentUser")
-    public BaseResponse<User> getCurrentUser(HttpServletRequest request){
+    public BaseResponse<User> getCurrentUser(HttpServletRequest request) {
         // 获取当前用户信息
         User userObj = (User) request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
-        if(userObj == null){
+        if (userObj == null) {
             throw new BussinessException(ErrorCode.NOT_LOGIN);
         }
         // TODO 校验用户是否合法，根据用户status之类做黑名单判断
         User safeUser = UserUtil.getSafeUser(userService.getById(userObj.getId()));
         return ResponseUtil.ok(safeUser);
     }
-
-
 
 
     /**
@@ -172,10 +196,10 @@ public class UserController {
         }
         // null强转User不会报错，所以问题不大
         User userObj = (User) request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
-        if(ObjectUtils.isEmpty(userObj)){
+        if (ObjectUtils.isEmpty(userObj)) {
             return false;
         }
-        if(userObj.getUserRole().equals(UserConstant.ADMIN_ROLE) || userObj.getUserRole().equals(UserConstant.SUPER_ADMIN_ROLE)){
+        if (userObj.getUserRole().equals(UserConstant.ADMIN_ROLE) || userObj.getUserRole().equals(UserConstant.SUPER_ADMIN_ROLE)) {
             return true;
         }
         return false;

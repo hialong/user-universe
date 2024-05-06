@@ -1,4 +1,6 @@
 -- auto-generated definition
+create database user_center;
+
 create table user
 (
     id           bigint auto_increment comment 'User id'
@@ -10,7 +12,7 @@ create table user
     userPassword varchar(512)                           not null comment 'password',
     phone        varchar(128)                           null comment 'subscriber identity',
     email        varchar(512)                           null comment 'email address',
-    UserStatus   int          default 0                 not null comment 'status 0 -normal 1-封号',
+    userStatus   int          default 0                 not null comment 'status 0 -normal 1-封号',
     updateTime   datetime     default CURRENT_TIMESTAMP null,
     createTime   datetime     default CURRENT_TIMESTAMP null comment 'the record create time',
     flag         tinyint      default 0                 not null comment 'isDelete',

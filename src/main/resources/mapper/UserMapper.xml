@@ -28,9 +28,42 @@
     <sql id="Base_Column_List">
         id,userName,userAccount,
         avatarUrl,gender,userPassword,
-        phone,email,UserStatus,
+        phone,email,userStatus,
         updateTime,createTime,flag,
         userRole,specialCode,score,
         extend_1,extend_2,extend_3
     </sql>
+
+    <select id="findUserByPage" resultType="com.decade.usercenter.model.domain.User">
+        select * from user
+        <where>
+        <if test="userName != null and userName != ''">
+            and userName like concat('%',#{userName},'%')
+        </if>
+        <if test="userAccount !=null and userAccount !=''">
+            and userAccount like concat ('%',#{userAccount},'%')
+        </if>
+        <if test="gender !=null and gender !=''">
+            and gender = #{gender}
+        </if>
+        <if test="phone !=null and phone !=''">
+            and phone like concat ('%',#{phone},'%')
+        </if>
+        <if test="email !=null and email !=''">
+            and email like concat ('%',#{email},'%')
+        </if>
+        <if test="specialCode !=null and specialCode !=''">
+            and specialCode = #{specialCode}
+        </if>
+        <if test="userStatus !=null and userStatus !=''">
+            and userStatus = #{userStatus}
+        </if>
+        <if test="userRole !=null and userRole !=''">
+            and userRole = #{userRole}
+        </if>
+        <if test="createTime !=null and createTime !=''">
+            and createTime = #{createTime}
+        </if>
+        </where>
+    </select>
 </mapper>

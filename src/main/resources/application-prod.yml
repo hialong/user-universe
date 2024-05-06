@@ -1,11 +1,11 @@
 spring:
   application:
-    name: user-center
+    name: user_center
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: 123456
-    url: jdbc:mysql://localhost:3306/user-center
+    password: hailong666
+    url: jdbc:mysql://8.136.96.241:3306/user_center
   # session失效时间 84600秒为一天
   session:
     timeout: 84600

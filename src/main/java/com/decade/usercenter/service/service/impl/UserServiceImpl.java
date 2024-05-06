@@ -3,6 +3,7 @@ package com.decade.usercenter.service.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.decade.usercenter.common.ErrorCode;
 import com.decade.usercenter.constant.UserConstant;
@@ -12,6 +13,8 @@ import com.decade.usercenter.service.service.UserService;
 import com.decade.usercenter.mapper.UserMapper;
 
 import com.decade.usercenter.utils.UserUtil;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -146,6 +149,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     public int userlogout(HttpServletRequest request) {
         request.getSession().removeAttribute(UserConstant.USER_LOGIN_STATE);
         return 1;
+    }
+
+    @Override
+    public PageInfo<User> queryUserByPage(User user, Integer pageNum, Integer pageSize) {
+        if (user == null) {
+            throw new BussinessException(ErrorCode.INVALID_PARAMS);
+        }
+        PageHelper.startPage(pageNum, pageSize,true);
+        // 条件查询
+        List<User> userByPage = userMapper.findUserByPage(user);
+        PageInfo<User> userPageInfo = new PageInfo<>(userByPage);
+        return userPageInfo;
     }
 }
 
