@@ -144,14 +144,31 @@ public class UserController {
         return ResponseUtil.ok(userByPage);
     }
 
+
+    /**
+     * 更新用户信息
+     *
+     * @param user     用户信息
+     * @param request  请求
+     * @return 是否更新成功
+     */
+    @PostMapping("/updateUser")
+    public BaseResponse<Boolean> updateUser(@RequestBody User user, HttpServletRequest request) {
+        if (user == null) {
+            throw new BussinessException(ErrorCode.NULL_PARAMS, "null request");
+        }
+        boolean updated = userService.updateById(user);
+        return ResponseUtil.ok(updated);
+    }
+
     /**
      * 删除用户,逻辑删除
      *
      * @param id 用户id
      * @return 是否删除成功
      */
-    @PostMapping("/delete")
-    public BaseResponse<Boolean> deleteUser(@RequestBody long id, HttpServletRequest request) {
+    @PostMapping("/deleteUser")
+    public BaseResponse<Boolean> deleteUser(@RequestParam("id") long id, HttpServletRequest request) {
         if (id <= 0) {
             throw new BussinessException(ErrorCode.INVALID_PARAMS, "invalid id {}", id);
         }

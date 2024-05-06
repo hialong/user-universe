@@ -35,8 +35,8 @@
     </sql>
 
     <select id="findUserByPage" resultType="com.decade.usercenter.model.domain.User">
-        select * from user
-        <where>
+        select id,userName,userAccount,gender,avatarUrl,phone,email,userStatus,userRole,specialCode,score,createTime from
+        user where flag != 1
         <if test="userName != null and userName != ''">
             and userName like concat('%',#{userName},'%')
         </if>
@@ -64,6 +64,7 @@
         <if test="createTime !=null and createTime !=''">
             and createTime = #{createTime}
         </if>
-        </where>
+
+
     </select>
 </mapper>
