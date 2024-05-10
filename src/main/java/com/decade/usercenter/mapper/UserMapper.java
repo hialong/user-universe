@@ -3,6 +3,7 @@ package com.decade.usercenter.mapper;
 import com.decade.usercenter.model.domain.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+
 import java.util.List;
 
 /**
@@ -14,6 +15,7 @@ public interface UserMapper extends BaseMapper<User> {
      * @param user user
      * @return userList
      */
+
     List<User> findUserByPage(User user);
 }
 

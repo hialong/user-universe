@@ -3,7 +3,6 @@ package com.decade.usercenter.service.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.decade.usercenter.common.ErrorCode;
 import com.decade.usercenter.constant.UserConstant;
@@ -77,6 +76,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
         user.setUserAccount(userAccount);
         user.setUserPassword(result);
+
+        // 需要一个默认的头像和名字
+        user.setUserName("用户"+userAccount);
+        // 默认的github头像
+        user.setAvatarUrl("https://avatars.githubusercontent.com/u/131379824?v=4");
         boolean save = save(user);
         if (!save) {
             throw new BussinessException(ErrorCode.INTERNAL_ERROR);
