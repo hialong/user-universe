@@ -1,8 +1,9 @@
 package com.decade.usercenter.utils;
-
 import com.decade.usercenter.model.domain.User;
 
+
 public class UserUtil {
+
     /**
      * 获取用户脱敏数据
      * @return safeUser数据
@@ -25,4 +26,5 @@ public class UserUtil {
         safetyUser.setSpecialCode(user.getSpecialCode());
         return safetyUser;
     }
+
 }

@@ -1,5 +1,7 @@
 -- auto-generated definition
-create database user_center;
+create database if not exists user_center;
+
+use user_center;
 
 create table user
 (

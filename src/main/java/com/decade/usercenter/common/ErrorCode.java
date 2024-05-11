@@ -11,30 +11,39 @@ public enum ErrorCode {
     /**
      * 无效参数
      */
-    INVALID_PARAMS(40000, "invalid param please check", ""),
+    INVALID_PARAMS(40000, "无效参数或参数错误", ""),
 
     /**
      * 参数为null
      */
-    NULL_PARAMS(40001,"the param can not be null",""),
+    NULL_PARAMS(40001,"参数不能为null",""),
     /**
      * 未登录
      */
-    NOT_LOGIN(40100,"not login",""),
+    NOT_LOGIN(40100,"未登录",""),
     /**
      * 权限不足
      */
-    NO_AUTH(40101,"Permission denied",""),
+    NO_AUTH(40101,"权限不足",""),
 
     /**
      * 用户已经注册
      */
-    DUPLICATE_USER(40102,"user is already register",""),
+    DUPLICATE_USER(40102,"用户已被注册",""),
 
     /**
      * 用户不存在
      */
-    USER_DOESNOT_EXIT(40103,"user does not exit",""),
+    USER_DOESNOT_EXIT(40103,"用户不存在",""),
+    /**
+     * 操作失败
+     */
+    OPERATION_ERROR(40104,"操作失败",""),
+
+    /**
+     * 未找到数据
+     */
+    NOT_FOUND_ERROR(40105,"请求数据不存在",""),
 
     /**
      * 内部异常

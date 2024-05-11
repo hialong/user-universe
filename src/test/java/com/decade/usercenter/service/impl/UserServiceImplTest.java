@@ -1,15 +1,12 @@
-package com.decade.usercenter.service.service.impl;
+package com.decade.usercenter.service.impl;
 
-import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.decade.usercenter.model.domain.User;
-import com.decade.usercenter.service.service.UserService;
+import com.decade.usercenter.service.UserService;
 import com.github.pagehelper.PageInfo;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Assertions;

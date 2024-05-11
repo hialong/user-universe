@@ -12,14 +12,16 @@ public interface UserConstant {
     /**
      * 普通用户
      */
-    Integer NORMAL_ROLE = 0;
+    String NORMAL_ROLE = "0";
     /**
      * 管理员用户
      */
-    Integer ADMIN_ROLE = 1;
+    String ADMIN_ROLE = "1";
     /**
      * 超级管理员用户
      */
-    Integer SUPER_ADMIN_ROLE = 9;
+    String SUPER_ADMIN_ROLE = "9";
+
+    String BAN = "-1";
 
 }

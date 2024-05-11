@@ -1,14 +1,16 @@
-package com.decade.usercenter.service.service.impl;
+package com.decade.usercenter.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.decade.usercenter.common.ErrorCode;
+import com.decade.usercenter.common.ResponseUtil;
 import com.decade.usercenter.constant.UserConstant;
-import com.decade.usercenter.exception.BussinessException;
+import com.decade.usercenter.enums.UserRoleEnum;
+import com.decade.usercenter.exception.BusinessException;
 import com.decade.usercenter.model.domain.User;
-import com.decade.usercenter.service.service.UserService;
+import com.decade.usercenter.service.UserService;
 import com.decade.usercenter.mapper.UserMapper;
 
 import com.decade.usercenter.utils.UserUtil;
@@ -46,20 +48,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     public long userRegister(String userAccount, String userPassword, String checkPassword,String specialCode) {
         // 1.校验
         if (StringUtils.isAnyBlank(userAccount, userAccount, checkPassword)) {
-            throw new BussinessException(ErrorCode.INVALID_PARAMS,"account or password is empty");
+            throw new BusinessException(ErrorCode.INVALID_PARAMS,"account or password is empty");
         }
         if (userAccount.length() < 4) {
-            throw new BussinessException(ErrorCode.INVALID_PARAMS,"invalid param {0}",userAccount);
+            throw new BusinessException(ErrorCode.INVALID_PARAMS,"invalid param {0}",userAccount);
         }
         if (userPassword.length() < 8 || checkPassword.length() < 8 || !StringUtils.equals(userPassword,
                 checkPassword)) {
-            throw new BussinessException(ErrorCode.INVALID_PARAMS,"please check you password or checkPassword");
+            throw new BusinessException(ErrorCode.INVALID_PARAMS,"please check you password or checkPassword");
         }
         // 正则过滤特殊字符
         String validPattern = "^[a-zA-Z0-9_]+$";
         Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
         if (!matcher.find()) {
-            throw new BussinessException(ErrorCode.INVALID_PARAMS,"Illegal characters in userAccount {0},",userAccount);
+            throw new BusinessException(ErrorCode.INVALID_PARAMS,"Illegal characters in userAccount {0},",userAccount);
         }
 
 
@@ -68,7 +70,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         userQueryWrapper.eq("userAccount", userAccount);
         long count = count(userQueryWrapper);
         if (count >= 1) {
-            throw new BussinessException(ErrorCode.DUPLICATE_USER);
+            throw new BusinessException(ErrorCode.DUPLICATE_USER);
         }
         // 密码加密
         String result = DigestUtils.md5DigestAsHex((SALT + userPassword).getBytes());
@@ -83,7 +85,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         user.setAvatarUrl("https://avatars.githubusercontent.com/u/131379824?v=4");
         boolean save = save(user);
         if (!save) {
-            throw new BussinessException(ErrorCode.INTERNAL_ERROR);
+            throw new BusinessException(ErrorCode.INTERNAL_ERROR);
         }
         //邀请码功能待完善，反向推导邀请用户，然后给邀请用户加分或者记录,注册成功后再操作
         if(!specialCode.equals(UserConstant.NORMAL_SPECIAL_CODE)){
@@ -92,7 +94,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             // 注意这里要保证只查到一个，查到多个默认拿第一个
             List<User> users = userMapper.selectList(queryWrapper);
             if (users.size() != 1){
-                throw new BussinessException(ErrorCode.INVALID_PARAMS,"{}",specialCode);
+                throw new BusinessException(ErrorCode.INVALID_PARAMS,"{}",specialCode);
             }
             User inviteUser = users.get(0);
             UpdateWrapper<User> userUpdateWrapper = new UpdateWrapper<>();
@@ -107,19 +109,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     public User doLoginIn(String userAccount, String userPassword, HttpServletRequest request) {
         // 1.校验
         if (StringUtils.isAnyBlank(userAccount, userPassword)) {
-            throw new BussinessException(ErrorCode.INVALID_PARAMS);
+            throw new BusinessException(ErrorCode.INVALID_PARAMS);
         }
         if (userAccount.length() < 4) {
-            throw new BussinessException(ErrorCode.INVALID_PARAMS);
+            throw new BusinessException(ErrorCode.INVALID_PARAMS);
         }
         if (userPassword.length() < 8) {
-            throw new BussinessException(ErrorCode.INVALID_PARAMS);
+            throw new BusinessException(ErrorCode.INVALID_PARAMS);
         }
         // 正则过滤特殊字符
         String validPattern = "^[a-zA-Z0-9_]+$";
         Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
         if (!matcher.find()) {
-            throw new BussinessException(ErrorCode.INVALID_PARAMS);
+            throw new BusinessException(ErrorCode.INVALID_PARAMS);
         }
         // 登录
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
@@ -129,7 +131,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         User user = userMapper.selectOne(userQueryWrapper);
         // 用户不存在
         if (user == null) {
-           throw new BussinessException(ErrorCode.USER_DOESNOT_EXIT);
+           throw new BusinessException(ErrorCode.USER_DOESNOT_EXIT);
         }
         // 用户脱敏
         User safetyUser = UserUtil.getSafeUser(user);
@@ -150,6 +152,36 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     @Override
+    public User getCurrentUser(HttpServletRequest request) {
+        // 获取当前用户信息
+        User userObj = (User) request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        if (userObj == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        return UserUtil.getSafeUser(this.getById(userObj.getId()));
+    }
+
+    /**
+     * 是否为管理员
+     *
+     * @param request
+     * @return
+     */
+    @Override
+    public boolean isAdmin(HttpServletRequest request) {
+        // 仅管理员可查询
+        Object userObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        User user = (User) userObj;
+        return isAdmin(user);
+    }
+
+    @Override
+    public boolean isAdmin(User user) {
+        return user != null && UserRoleEnum.ADMIN.getValue().equals(user.getUserRole());
+    }
+
+
+    @Override
     public int userlogout(HttpServletRequest request) {
         request.getSession().removeAttribute(UserConstant.USER_LOGIN_STATE);
         return 1;
@@ -158,7 +190,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public PageInfo<User> queryUserByPage(User user, Integer pageNum, Integer pageSize) {
         if (user == null) {
-            throw new BussinessException(ErrorCode.INVALID_PARAMS);
+            throw new BusinessException(ErrorCode.INVALID_PARAMS);
         }
         PageHelper.startPage(pageNum, pageSize,true);
         // 条件查询

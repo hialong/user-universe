@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BussinessException.class)
-    public BaseResponse bussinessHandler(BussinessException e) {
+    @ExceptionHandler(BusinessException.class)
+    public BaseResponse bussinessHandler(BusinessException e) {
         log.error("Business Exception" + e.getMessage(), e);
         return ResponseUtil.error(e.getCode(), e.getMessage(), e.getDescription());
     }

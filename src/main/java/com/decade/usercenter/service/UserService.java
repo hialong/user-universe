@@ -1,4 +1,4 @@
-package com.decade.usercenter.service.service;
+package com.decade.usercenter.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.decade.usercenter.model.domain.User;
@@ -42,10 +42,40 @@ public interface UserService extends IService<User> {
     List<User> queryUser(String userName);
 
     /**
+     * 获取当前登录用户
+     * @param request 请求
+     * @return 当前登录用户
+     */
+    User getCurrentUser(HttpServletRequest request);
+
+    /**
+     * 是否为管理员
+     *
+     * @param request 请求
+     * @return 是否管理员
+     */
+    boolean isAdmin(HttpServletRequest request);
+
+    /**
+     * 是否为管理员
+     *
+     * @param user 用户信息
+     * @return 是否管理员
+     */
+    boolean isAdmin(User user);
+
+    /**
      * 用户登出
      * @param request 请求
      */
     int userlogout(HttpServletRequest request);
 
+    /**
+     * 分页查询
+     * @param user 用户信息
+     * @param pageNum 页码
+     * @param pageSize 页面大小
+     * @return 分页信息
+     */
     PageInfo<User> queryUserByPage(User user, Integer pageNum, Integer pageSize);
 }

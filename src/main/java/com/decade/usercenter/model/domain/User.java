@@ -58,7 +58,7 @@ public class User implements Serializable {
     private String email;
 
     /**
-     * status 0 -normal
+     * status 0 -normal -1封号
      */
     private Integer userStatus;
 

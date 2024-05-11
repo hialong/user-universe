@@ -1,6 +1,11 @@
 spring:
   application:
     name: user_center
+  profiles:
+    active: prod
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
