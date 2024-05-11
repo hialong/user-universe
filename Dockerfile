@@ -10,6 +10,7 @@ RUN apk add --no-cache --no-cache openjdk21
 
 #安装maven
 RUN apk add --no-cache --no-cache maven
+COPY settings.xml /usr/share/java/maven-3/conf/settings.xml
 
 # Copy local code to the container image.
 WORKDIR /app
