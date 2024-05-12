@@ -3,6 +3,7 @@ package com.decade.usercenter.model.dto.InterfaceInfo;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.decade.usercenter.common.PageRequest;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,7 +14,7 @@ import java.io.Serializable;
  */
 @TableName(value ="interface_info")
 @Data
-public class InterfaceInfoQueryRequest implements Serializable {
+public class InterfaceInfoQueryRequest extends PageRequest implements Serializable {
 
     /**
      * 主键
