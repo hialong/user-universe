@@ -1,6 +1,5 @@
 package com.decade.usercenter.model.dto.InterfaceInfo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 

@@ -1,7 +1,5 @@
 package com.decade.usercenter.model.dto.InterfaceInfo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.decade.usercenter.common.PageRequest;
 import lombok.Data;
@@ -56,10 +54,6 @@ public class InterfaceInfoQueryRequest extends PageRequest implements Serializab
      */
     private String operationType;
 
-    /**
-     * 创建人
-     */
-    private Long userId;
 
     private static final long serialVersionUID = 1L;
 

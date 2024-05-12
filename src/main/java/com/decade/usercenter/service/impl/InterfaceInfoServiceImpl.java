@@ -61,7 +61,6 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         String responseHeader = interfaceInfoQueryRequest.getResponseHeader();
         Integer status = interfaceInfoQueryRequest.getStatus();
         String operationType = interfaceInfoQueryRequest.getOperationType();
-        Long userId = interfaceInfoQueryRequest.getUserId();
         String sortField = interfaceInfoQueryRequest.getSortField();
         String sortOrder = interfaceInfoQueryRequest.getSortOrder();
         // 拼接查询条件
