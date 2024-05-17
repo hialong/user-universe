@@ -21,8 +21,8 @@ create table user
     userRole     int          default 0                 null comment '用户角色，0-普通用户，1-管理员，9-超级管理员',
     specialCode  varchar(512) default '0'               null comment '特别编号，注册时使用，校验',
     score        bigint       default 0                 null comment '用户等级积分',
-    extend_1     varchar(512)                           null comment '扩展字段',
-    extend_2     varchar(512)                           null comment '扩展字段',
+    accessKey     varchar(512)                           null comment '扩展字段',
+    seceretKey     varchar(512)                           null comment '扩展字段',
     extend_3     varchar(512)                           null comment '扩展字段'
 )
     comment 'user table';

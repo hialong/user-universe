@@ -45,6 +45,17 @@ public class InterfaceInfo implements Serializable {
      * 响应头
      */
     private String responseHeader;
+    /**
+     * 请求参数
+     * 示例写法
+     * [
+     *   {
+     *     "request": "xxx",
+     *     "type": "String"
+     *   }
+     * ]
+     */
+    private String requestParams;
 
     /**
      * 接口状态（0-关闭，1-开启）

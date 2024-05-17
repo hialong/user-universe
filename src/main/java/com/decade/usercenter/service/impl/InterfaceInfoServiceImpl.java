@@ -1,5 +1,5 @@
 package com.decade.usercenter.service.impl;
-import java.util.Date;
+import java.util.List;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -11,7 +11,6 @@ import com.decade.usercenter.mapper.InterfaceInfoMapper;
 import com.decade.usercenter.model.domain.InterfaceInfo;
 import com.decade.usercenter.model.dto.InterfaceInfo.InterfaceInfoQueryRequest;
 import com.decade.usercenter.service.InterfaceInfoService;
-
 import com.decade.usercenter.utils.SqlUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -25,6 +24,9 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
 
 
     public static final int MAX_REQUEST_NUMBER  = 500;
+    public static final int  MAX_NAME_LENGTH= 50;
+
+    public static final List<String> VALID_OPERATION_TYPE = List.of("GET","POST","DELETE","PUT");
 
     @Override
     public void validInterfaceInfo(InterfaceInfo interfaceInfo, boolean add) {
@@ -34,17 +36,19 @@ public class InterfaceInfoServiceImpl extends ServiceImpl<InterfaceInfoMapper, I
         String name = interfaceInfo.getName();
         String description = interfaceInfo.getDescription();
         String url = interfaceInfo.getUrl();
-        Integer status = interfaceInfo.getStatus();
         String operationType = interfaceInfo.getOperationType();
         // 创建时参数不能为空
         if(add){
             ThrowUtils.throwIf(StringUtils.isAnyBlank(name,url,operationType),ErrorCode.INVALID_PARAMS);
         }
-        //参数校验 status目前就两个状态，一个是0关闭，一个是1打开，其他的状态不能传入
-        ThrowUtils.throwIf(status != 0 && status != 1,ErrorCode.INVALID_PARAMS,"status参数非法");
-        if(description.length()>MAX_REQUEST_NUMBER){
+        if(name.length()>MAX_NAME_LENGTH){
+            throw new BusinessException(ErrorCode.INVALID_PARAMS,"名称过长");
+        }
+        if(description!=null&&description.length()>MAX_REQUEST_NUMBER){
             throw new BusinessException(ErrorCode.INVALID_PARAMS,"description参数过长");
         }
+        //operationType只能在GET、POST、DELETE、PUT中选择
+        ThrowUtils.throwIf(!VALID_OPERATION_TYPE.contains(operationType),ErrorCode.INVALID_PARAMS,"operationType参数错误");
     }
 
     @Override

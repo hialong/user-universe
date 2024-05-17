@@ -20,8 +20,8 @@
             <result property="userRole" column="userRole" jdbcType="INTEGER"/>
             <result property="specialCode" column="specialCode" jdbcType="VARCHAR"/>
             <result property="score" column="score" jdbcType="BIGINT"/>
-            <result property="extend_1" column="extend_1" jdbcType="VARCHAR"/>
-            <result property="extend_2" column="extend_2" jdbcType="VARCHAR"/>
+            <result property="accessKey" column="accessKey" jdbcType="VARCHAR"/>
+            <result property="seceretKey" column="seceretKey" jdbcType="VARCHAR"/>
             <result property="extend_3" column="extend_3" jdbcType="VARCHAR"/>
     </resultMap>
 
@@ -31,11 +31,11 @@
         phone,email,userStatus,
         updateTime,createTime,flag,
         userRole,specialCode,score,
-        extend_1,extend_2,extend_3
+        accessKey,seceretKey,extend_3
     </sql>
 
     <select id="findUserByPage" resultType="com.decade.usercenter.model.domain.User">
-        select id,userName,userAccount,gender,avatarUrl,phone,email,userStatus,userRole,specialCode,score,createTime from
+        select id,userName,userAccount,gender,avatarUrl,phone,email,userStatus,userRole,specialCode,score,createTime,updateTime from
         user where flag != 1
         <if test="userName != null and userName != ''">
             and userName like concat('%',#{userName},'%')

@@ -22,6 +22,8 @@ public class UserUtil {
         safetyUser.setEmail(user.getEmail());
         safetyUser.setUserStatus(user.getUserStatus());
         safetyUser.setCreateTime(user.getCreateTime());
+        safetyUser.setUpdateTime(user.getUpdateTime());
+        safetyUser.setAccessKey(user.getAccessKey());
         safetyUser.setUserRole(user.getUserRole());
         safetyUser.setSpecialCode(user.getSpecialCode());
         return safetyUser;

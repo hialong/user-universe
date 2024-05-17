@@ -2,14 +2,20 @@ package com.decade.usercenter.controller;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.decade.apiassignclientsdk.client.HapiClient;
+import com.decade.apiassignclientsdk.model.Someting;
 import com.decade.usercenter.annotation.CheckAuth;
+import com.decade.usercenter.common.IdRequest;
 import com.decade.usercenter.common.ResponseUtil;
 import com.decade.usercenter.constant.UserConstant;
+import com.decade.usercenter.enums.InterfaceInfoStatusEnum;
 import com.decade.usercenter.model.dto.InterfaceInfo.InterfaceInfoAddRequest;
 import com.decade.usercenter.model.dto.InterfaceInfo.InterfaceInfoQueryRequest;
 import com.decade.usercenter.model.dto.InterfaceInfo.InterfaceInfoUpdateRequest;
+import com.decade.usercenter.model.dto.InterfaceInfo.InvokeRequest;
 import com.decade.usercenter.service.InterfaceInfoService;
 import com.decade.usercenter.service.UserService;
+import com.decade.usercenter.utils.UserUtil;
 import com.google.gson.Gson;
 import com.decade.usercenter.common.BaseResponse;
 import com.decade.usercenter.common.DeleteRequest;
@@ -21,12 +27,16 @@ import com.decade.usercenter.model.domain.User;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * 接口信息
@@ -38,6 +48,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class InterfaceInfoController {
 
+    @Resource
+    private HapiClient hapiClient;
     @Resource
     private InterfaceInfoService interfaceInfoService;
 
@@ -108,7 +120,7 @@ public class InterfaceInfoController {
     @CheckAuth(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateInterfaceInfo(@RequestBody InterfaceInfoUpdateRequest
      interfaceInfoUpdateRequest) {
-        if (interfaceInfoUpdateRequest == null || interfaceInfoUpdateRequest.getId() <= 0) {
+        if (interfaceInfoUpdateRequest == null || interfaceInfoUpdateRequest.getId() < 0) {
             throw new BusinessException(ErrorCode.INVALID_PARAMS);
         }
         InterfaceInfo interfaceInfo = new InterfaceInfo();
@@ -188,6 +200,70 @@ public class InterfaceInfoController {
     }
 
     // endregion
+    @PostMapping("/online")
+    @CheckAuth(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> onlineInterfaceInfo(@RequestBody IdRequest idRequest) {
+        if (idRequest == null || idRequest.getId() < 0) {
+            throw new BusinessException(ErrorCode.INVALID_PARAMS);
+        }
+        //校验该接口是否存在
+        Long id = idRequest.getId();
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
+        ThrowUtils.throwIf(oldInterfaceInfo == null, ErrorCode.NOT_FOUND_ERROR);
 
+        //TODO 判断接口能否调用,后面改成按照地址去调用判断是不是404啥的
+        String des = hapiClient.doSomething(new Someting("test", "test"));
+        if(StringUtils.isBlank(des)){
+            throw new BusinessException(ErrorCode.INTERNAL_ERROR,"接口调用不成功");
+        }
+        //更新状态
+        InterfaceInfo interfaceInfo = new InterfaceInfo();
+        interfaceInfo.setId(id);
+        interfaceInfo.setStatus(InterfaceInfoStatusEnum.ONLINE.getValue());
+        boolean result = interfaceInfoService.updateById(interfaceInfo);
+        return ResponseUtil.ok(result);
+    }
+
+    @PostMapping("/offline")
+    @CheckAuth(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> offlineInterfaceInfo(@RequestBody IdRequest idRequest) {
+        if (idRequest == null || idRequest.getId() < 0) {
+            throw new BusinessException(ErrorCode.INVALID_PARAMS);
+        }
+        //校验该接口是否存在
+        Long id = idRequest.getId();
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
+        ThrowUtils.throwIf(oldInterfaceInfo == null, ErrorCode.NOT_FOUND_ERROR);
+        //更新状态
+        InterfaceInfo interfaceInfo = new InterfaceInfo();
+        interfaceInfo.setId(id);
+        interfaceInfo.setStatus(InterfaceInfoStatusEnum.OFFLINE.getValue());
+        boolean result = interfaceInfoService.updateById(interfaceInfo);
+        return ResponseUtil.ok(result);
+    }
+
+    /**
+     * 用户调用接口
+     * @param invokeRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/invoke")
+    public BaseResponse<Object> invokeInterfaceInfo(@RequestBody InvokeRequest invokeRequest,HttpServletRequest request) {
+        if (invokeRequest == null || invokeRequest.getId() < 0) {
+            throw new BusinessException(ErrorCode.INVALID_PARAMS);
+        }
+        //校验该接口是否存在
+        Long id = invokeRequest.getId();
+        InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
+        ThrowUtils.throwIf(oldInterfaceInfo == null||oldInterfaceInfo.getStatus()==0, ErrorCode.NOT_FOUND_ERROR,"接口不存在或者接口已关闭");
+        //todo: 简单模拟一下调用，后面再改成专门的调用方式,以及，getLoginUser方法
+        User currentUser = userService.getCurrentUser(request);
+        HapiClient hapiClient1 = new HapiClient("abcdefg", currentUser.getAccessKey());
+        Gson gson = new Gson();
+        Someting someting = gson.fromJson(invokeRequest.getUserRequestParams(), Someting.class);
+        String result = hapiClient1.doSomething(someting);
+        return ResponseUtil.ok(result);
+    }
 
 }

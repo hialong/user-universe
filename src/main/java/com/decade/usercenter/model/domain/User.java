@@ -95,12 +95,12 @@ public class User implements Serializable {
     /**
      * 扩展字段
      */
-    private String extend_1;
+    private String accessKey;
 
     /**
      * 扩展字段
      */
-    private String extend_2;
+    private String seceretKey;
 
     /**
      * 扩展字段

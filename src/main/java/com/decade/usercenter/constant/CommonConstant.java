@@ -1,5 +1,9 @@
 package com.decade.usercenter.constant;
 
+import ch.qos.logback.core.util.COWArrayList;
+
+import java.util.List;
+
 /**
  * 通用常量
  * @author hailong

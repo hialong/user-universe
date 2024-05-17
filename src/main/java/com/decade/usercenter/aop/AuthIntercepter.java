@@ -35,7 +35,7 @@ public class AuthIntercepter {
      * @param checkAuth 权限注解
      */
     @Around("@annotation(checkAuth)")
-    public void checkAuthInterceptor(ProceedingJoinPoint joinPoint, CheckAuth checkAuth) throws Throwable {
+    public Object checkAuthInterceptor(ProceedingJoinPoint joinPoint, CheckAuth checkAuth) throws Throwable {
         // 注解中的必须用户
         String mustRole = checkAuth.mustRole();
         log.info("需要权限{}", mustRole);
@@ -47,13 +47,11 @@ public class AuthIntercepter {
         if(StringUtils.isNotBlank(mustRole)){
             //如果是超级管理员，直接放行
             if(UserConstant.SUPER_ADMIN_ROLE.equals(currentUser.getUserRole().toString())){
-                joinPoint.proceed();
-                return;
+                return joinPoint.proceed();
             }
             // 如果不是超级管理员才能操作，则判断是否是管理员,管理员也直接放行
             if(!mustRole.equals(UserConstant.SUPER_ADMIN_ROLE)&&UserConstant.ADMIN_ROLE.equals(currentUser.getUserRole().toString())){
-                joinPoint.proceed();
-                return;
+                return joinPoint.proceed();
             }
 
             // 如果配置中就没有这个权限，那怎么写都不会有权限操作
@@ -66,10 +64,11 @@ public class AuthIntercepter {
             log.info("当前用户权限为：{}", currentUser.getUserRole());
             //如果权限相同，则直接放行
             if(currentUser.getUserRole().toString().equals(mustRole)) {
-                joinPoint.proceed();
-                return;
+
+                return joinPoint.proceed();
             }
             throw new BusinessException(ErrorCode.NO_AUTH);
         }
+        return joinPoint.proceed();
     }
 }

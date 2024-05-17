@@ -1,5 +1,4 @@
 package com.decade.usercenter.model.dto.InterfaceInfo;
-
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.decade.usercenter.common.PageRequest;
 import lombok.Data;
@@ -45,6 +44,11 @@ public class InterfaceInfoQueryRequest extends PageRequest implements Serializab
     private String responseHeader;
 
     /**
+     * 请求参数
+     */
+    private String requestParams;
+
+    /**
      * 接口状态（0-关闭，1-开启）
      */
     private Integer status;
@@ -54,6 +58,10 @@ public class InterfaceInfoQueryRequest extends PageRequest implements Serializab
      */
     private String operationType;
 
+    /**
+     * 创建人
+     */
+    private Long userId;
 
     private static final long serialVersionUID = 1L;
 

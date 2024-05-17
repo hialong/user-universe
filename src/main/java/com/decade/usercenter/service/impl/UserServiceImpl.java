@@ -1,6 +1,7 @@
 package com.decade.usercenter.service.impl;
 
 
+import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -45,23 +46,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     private static final String SALT = "abcd";
 
     @Override
-    public long userRegister(String userAccount, String userPassword, String checkPassword,String specialCode) {
+    public long userRegister(String userAccount, String userPassword, String checkPassword, String specialCode) {
         // 1.校验
         if (StringUtils.isAnyBlank(userAccount, userAccount, checkPassword)) {
-            throw new BusinessException(ErrorCode.INVALID_PARAMS,"account or password is empty");
+            throw new BusinessException(ErrorCode.INVALID_PARAMS, "account or password is empty");
         }
         if (userAccount.length() < 4) {
-            throw new BusinessException(ErrorCode.INVALID_PARAMS,"invalid param {0}",userAccount);
+            throw new BusinessException(ErrorCode.INVALID_PARAMS, "invalid param {0}", userAccount);
         }
         if (userPassword.length() < 8 || checkPassword.length() < 8 || !StringUtils.equals(userPassword,
                 checkPassword)) {
-            throw new BusinessException(ErrorCode.INVALID_PARAMS,"please check you password or checkPassword");
+            throw new BusinessException(ErrorCode.INVALID_PARAMS, "please check you password or checkPassword");
         }
         // 正则过滤特殊字符
         String validPattern = "^[a-zA-Z0-9_]+$";
         Matcher matcher = Pattern.compile(validPattern).matcher(userAccount);
         if (!matcher.find()) {
-            throw new BusinessException(ErrorCode.INVALID_PARAMS,"Illegal characters in userAccount {0},",userAccount);
+            throw new BusinessException(ErrorCode.INVALID_PARAMS, "Illegal characters in userAccount {0},",
+                    userAccount);
         }
 
 
@@ -80,26 +82,31 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         user.setUserPassword(result);
 
         // 需要一个默认的头像和名字
-        user.setUserName("用户"+userAccount);
+        user.setUserName("用户" + userAccount);
         // 默认的github头像
         user.setAvatarUrl("https://avatars.githubusercontent.com/u/131379824?v=4");
+        // 设置默认的accessKey和secretKey，保证唯一
+        String accessKey = DigestUtil.md5Hex(SALT+userAccount+System.currentTimeMillis());
+        String secretKey = DigestUtil.md5Hex(SALT+"."+userAccount+"."+System.currentTimeMillis());
+        user.setAccessKey(accessKey);
+        user.setSeceretKey(secretKey);
         boolean save = save(user);
         if (!save) {
             throw new BusinessException(ErrorCode.INTERNAL_ERROR);
         }
         //邀请码功能待完善，反向推导邀请用户，然后给邀请用户加分或者记录,注册成功后再操作
-        if(!specialCode.equals(UserConstant.NORMAL_SPECIAL_CODE)){
+        if (!specialCode.equals(UserConstant.NORMAL_SPECIAL_CODE)) {
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("specialCode",specialCode);
+            queryWrapper.eq("specialCode", specialCode);
             // 注意这里要保证只查到一个，查到多个默认拿第一个
             List<User> users = userMapper.selectList(queryWrapper);
-            if (users.size() != 1){
-                throw new BusinessException(ErrorCode.INVALID_PARAMS,"{}",specialCode);
+            if (users.size() != 1) {
+                throw new BusinessException(ErrorCode.INVALID_PARAMS, "{}", specialCode);
             }
             User inviteUser = users.get(0);
             UpdateWrapper<User> userUpdateWrapper = new UpdateWrapper<>();
-            userUpdateWrapper.eq("id",inviteUser.getId());
-            userUpdateWrapper.set("score",inviteUser.getScore()+1);
+            userUpdateWrapper.eq("id", inviteUser.getId());
+            userUpdateWrapper.set("score", inviteUser.getScore() + 1);
             update(userUpdateWrapper);
         }
         return user.getId();
@@ -131,7 +138,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         User user = userMapper.selectOne(userQueryWrapper);
         // 用户不存在
         if (user == null) {
-           throw new BusinessException(ErrorCode.USER_DOESNOT_EXIT);
+            throw new BusinessException(ErrorCode.USER_DOESNOT_EXIT);
         }
         // 用户脱敏
         User safetyUser = UserUtil.getSafeUser(user);
@@ -177,7 +184,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Override
     public boolean isAdmin(User user) {
-        return user != null && UserRoleEnum.ADMIN.getValue().equals(user.getUserRole());
+        return user != null &&
+                (UserRoleEnum.ADMIN.getValue().equals(user.getUserRole().toString())
+                        || UserRoleEnum.SUPER_ADMIN.getValue().equals(user.getUserRole().toString()));
     }
 
 
@@ -192,7 +201,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (user == null) {
             throw new BusinessException(ErrorCode.INVALID_PARAMS);
         }
-        PageHelper.startPage(pageNum, pageSize,true);
+        PageHelper.startPage(pageNum, pageSize, true);
         // 条件查询
         List<User> userByPage = userMapper.findUserByPage(user);
         PageInfo<User> userPageInfo = new PageInfo<>(userByPage);

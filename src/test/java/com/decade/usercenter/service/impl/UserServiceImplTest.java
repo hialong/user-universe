@@ -24,7 +24,6 @@ public class UserServiceImplTest {
     @Resource
     private UserService userService;
 
-
     @Test
     public void testSaveUser() {
         User user = new User();

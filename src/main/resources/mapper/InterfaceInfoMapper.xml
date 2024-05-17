@@ -11,6 +11,7 @@
             <result property="url" column="url" jdbcType="VARCHAR"/>
             <result property="requestHeader" column="requestHeader" jdbcType="VARCHAR"/>
             <result property="responseHeader" column="responseHeader" jdbcType="VARCHAR"/>
+            <result property="requestParams" column="responseHeader" jdbcType="VARCHAR"/>
             <result property="status" column="status" jdbcType="INTEGER"/>
             <result property="operationType" column="operationType" jdbcType="VARCHAR"/>
             <result property="userId" column="userId" jdbcType="BIGINT"/>
@@ -21,7 +22,7 @@
 
     <sql id="Base_Column_List">
         id,name,description,
-        url,requestHeader,responseHeader,
+        url,requestHeader,responseHeader,requestParams,
         status,operationType,userId,
         createTime,updateTime,flag
     </sql>
