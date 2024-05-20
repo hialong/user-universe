@@ -15,7 +15,6 @@ import com.decade.usercenter.model.dto.InterfaceInfo.InterfaceInfoUpdateRequest;
 import com.decade.usercenter.model.dto.InterfaceInfo.InvokeRequest;
 import com.decade.usercenter.service.InterfaceInfoService;
 import com.decade.usercenter.service.UserService;
-import com.decade.usercenter.utils.UserUtil;
 import com.google.gson.Gson;
 import com.decade.usercenter.common.BaseResponse;
 import com.decade.usercenter.common.DeleteRequest;
@@ -34,9 +33,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+
 
 /**
  * 接口信息
@@ -119,7 +116,7 @@ public class InterfaceInfoController {
     @PostMapping("/update")
     @CheckAuth(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateInterfaceInfo(@RequestBody InterfaceInfoUpdateRequest
-     interfaceInfoUpdateRequest) {
+                                                             interfaceInfoUpdateRequest) {
         if (interfaceInfoUpdateRequest == null || interfaceInfoUpdateRequest.getId() < 0) {
             throw new BusinessException(ErrorCode.INVALID_PARAMS);
         }
@@ -162,8 +159,8 @@ public class InterfaceInfoController {
      */
     @PostMapping("/list/page")
     public BaseResponse<Page<InterfaceInfo>> listInterfaceInfoByPage(@RequestBody InterfaceInfoQueryRequest
-     interfaceInfoQueryRequest,
-                                                                       HttpServletRequest request) {
+                                                                             interfaceInfoQueryRequest,
+                                                                     HttpServletRequest request) {
         long current = interfaceInfoQueryRequest.getCurrent();
         long size = interfaceInfoQueryRequest.getPageSize();
         // 限制爬虫
@@ -183,8 +180,8 @@ public class InterfaceInfoController {
      */
     @PostMapping("/my/list/page")
     public BaseResponse<Page<InterfaceInfo>> listMyInterfaceInfoByPage(@RequestBody InterfaceInfoQueryRequest
-     interfaceInfoQueryRequest,
-            HttpServletRequest request) {
+                                                                               interfaceInfoQueryRequest,
+                                                                       HttpServletRequest request) {
         if (interfaceInfoQueryRequest == null) {
             throw new BusinessException(ErrorCode.INVALID_PARAMS);
         }
@@ -213,8 +210,8 @@ public class InterfaceInfoController {
 
         //TODO 判断接口能否调用,后面改成按照地址去调用判断是不是404啥的
         String des = hapiClient.doSomething(new Someting("test", "test"));
-        if(StringUtils.isBlank(des)){
-            throw new BusinessException(ErrorCode.INTERNAL_ERROR,"接口调用不成功");
+        if (StringUtils.isBlank(des)) {
+            throw new BusinessException(ErrorCode.INTERNAL_ERROR, "接口调用不成功");
         }
         //更新状态
         InterfaceInfo interfaceInfo = new InterfaceInfo();
@@ -244,25 +241,33 @@ public class InterfaceInfoController {
 
     /**
      * 用户调用接口
+     *
      * @param invokeRequest
      * @param request
      * @return
      */
     @PostMapping("/invoke")
-    public BaseResponse<Object> invokeInterfaceInfo(@RequestBody InvokeRequest invokeRequest,HttpServletRequest request) {
+    public BaseResponse<Object> invokeInterfaceInfo(@RequestBody InvokeRequest invokeRequest,
+                                                    HttpServletRequest request) {
         if (invokeRequest == null || invokeRequest.getId() < 0) {
             throw new BusinessException(ErrorCode.INVALID_PARAMS);
         }
         //校验该接口是否存在
         Long id = invokeRequest.getId();
         InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
-        ThrowUtils.throwIf(oldInterfaceInfo == null||oldInterfaceInfo.getStatus()==0, ErrorCode.NOT_FOUND_ERROR,"接口不存在或者接口已关闭");
+        ThrowUtils.throwIf(oldInterfaceInfo == null || oldInterfaceInfo.getStatus() == 0, ErrorCode.NOT_FOUND_ERROR,
+                "接口不存在或者接口已关闭");
         //todo: 简单模拟一下调用，后面再改成专门的调用方式,以及，getLoginUser方法
         User currentUser = userService.getCurrentUser(request);
         HapiClient hapiClient1 = new HapiClient("abcdefg", currentUser.getAccessKey());
-        Gson gson = new Gson();
-        Someting someting = gson.fromJson(invokeRequest.getUserRequestParams(), Someting.class);
-        String result = hapiClient1.doSomething(someting);
+        String result = null;
+        try {
+            Someting someting = GSON.fromJson(invokeRequest.getUserRequestParams(), Someting.class);
+            result = hapiClient1.doSomething(someting);
+        } catch (Exception e) {
+            throw new BusinessException(ErrorCode.INVALID_PARAMS, "请求参数有问题，请检查");
+        }
+
         return ResponseUtil.ok(result);
     }
 

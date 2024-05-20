@@ -12,7 +12,6 @@ import java.io.Serializable;
  *
  * @author hailong
  */
-@TableName(value = "interface_info")
 @Data
 public class InterfaceInfoAddRequest implements Serializable {
 

@@ -9,7 +9,6 @@ import java.io.Serializable;
  * 更新请求
  * @author hailong
  */
-@TableName(value ="interface_info")
 @Data
 public class InterfaceInfoUpdateRequest implements Serializable {
 

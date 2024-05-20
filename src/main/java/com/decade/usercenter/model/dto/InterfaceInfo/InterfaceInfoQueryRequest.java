@@ -9,7 +9,6 @@ import java.io.Serializable;
  * 查询请求
  * @author hailong
  */
-@TableName(value ="interface_info")
 @Data
 public class InterfaceInfoQueryRequest extends PageRequest implements Serializable {
 

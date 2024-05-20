@@ -11,7 +11,6 @@ import java.io.Serializable;
  * @author hailong
  */
 @Data
-@TableName(value = "interface_info")
 public class InvokeRequest implements Serializable {
     /**
      * id
