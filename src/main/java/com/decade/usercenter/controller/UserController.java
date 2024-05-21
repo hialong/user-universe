@@ -1,13 +1,13 @@
 package com.decade.usercenter.controller;
 
 
+import com.decade.hapicommon.model.domain.User;
 import com.decade.usercenter.annotation.CheckAuth;
 import com.decade.usercenter.common.BaseResponse;
 import com.decade.usercenter.common.ErrorCode;
 import com.decade.usercenter.common.ResponseUtil;
 import com.decade.usercenter.constant.UserConstant;
 import com.decade.usercenter.exception.BusinessException;
-import com.decade.usercenter.model.domain.User;
 import com.decade.usercenter.model.request.UserLoginRequest;
 import com.decade.usercenter.model.request.UserRegisterRequest;
 import com.decade.usercenter.service.UserService;

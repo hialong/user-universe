@@ -1,7 +1,7 @@
 package com.decade.usercenter.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.decade.usercenter.model.domain.InterfaceInfo;
+import com.decade.hapicommon.model.domain.InterfaceInfo;
 
 
 /**

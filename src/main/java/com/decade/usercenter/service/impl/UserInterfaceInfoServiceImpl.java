@@ -1,19 +1,21 @@
 package com.decade.usercenter.service.impl;
-import java.util.Date;
+
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.decade.hapicommon.model.domain.InterfaceInfo;
+import com.decade.hapicommon.model.domain.UserInterfaceInfo;
 import com.decade.usercenter.common.ErrorCode;
 import com.decade.usercenter.constant.CommonConstant;
 import com.decade.usercenter.exception.BusinessException;
 import com.decade.usercenter.exception.ThrowUtils;
-import com.decade.usercenter.model.domain.InterfaceInfo;
-import com.decade.usercenter.model.domain.UserInterfaceInfo;
+
+import com.decade.usercenter.mapper.InterfaceInfoMapper;
 import com.decade.usercenter.model.dto.userInterfaceInfo.UserInterfaceInfoQueryRequest;
 import com.decade.usercenter.service.UserInterfaceInfoService;
 import com.decade.usercenter.mapper.UserInterfaceInfoMapper;
 import com.decade.usercenter.utils.SqlUtils;
-import org.apache.commons.lang3.StringUtils;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 /**
@@ -22,6 +24,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoMapper, UserInterfaceInfo>
     implements UserInterfaceInfoService{
+
+    @Resource
+    private InterfaceInfoMapper interfaceInfoMapper;
 
     @Override
     public void validUserInterfaceInfo(UserInterfaceInfo userInterfaceInfo, boolean add) {
@@ -94,8 +99,20 @@ public class UserInterfaceInfoServiceImpl extends ServiceImpl<UserInterfaceInfoM
                 .eq(UserInterfaceInfo::getUserId, userId)
                 .eq(UserInterfaceInfo::getInterfaceInfoId, interfaceInfoId)
                 .one();
-        ThrowUtils.throwIf(userInterfaceInfo == null || userInterfaceInfo.getLeftNum() <= 0, ErrorCode.INVALID_PARAMS
-                , "调用接口不存在或者用户剩余调用次数不足");
+        //这段逻辑是如果为null的话，则我们往数据库里面插入一条信息，leftNum给50次
+        if(userInterfaceInfo == null){
+            InterfaceInfo interfaceInfo = interfaceInfoMapper.selectById(interfaceInfoId);
+            if(interfaceInfo == null){
+                throw new BusinessException(ErrorCode.INVALID_PARAMS, "接口不存在");
+            }
+            userInterfaceInfo = new UserInterfaceInfo();
+            userInterfaceInfo.setInterfaceInfoId(interfaceInfoId);
+            userInterfaceInfo.setUserId(userId);
+            userInterfaceInfo.setLeftNum(50);
+            this.save(userInterfaceInfo);
+        }
+        ThrowUtils.throwIf(userInterfaceInfo != null && userInterfaceInfo.getLeftNum() <= 0, ErrorCode.INVALID_PARAMS
+                , "用户剩余调用次数不足");
         return this.update()
                 .setSql("leftNum = leftNum - 1,totalNum = totalNum + 1")
                 .eq("interfaceInfoId", interfaceInfoId)

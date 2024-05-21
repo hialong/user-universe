@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-import com.decade.usercenter.model.domain.User;
+import com.decade.hapicommon.model.domain.User;
 import com.decade.usercenter.service.UserService;
 import com.github.pagehelper.PageInfo;
 import jakarta.annotation.Resource;

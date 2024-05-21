@@ -1,4 +1,4 @@
-package com.decade.usercenter.model.domain;
+package com.decade.hapicommon.model.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;

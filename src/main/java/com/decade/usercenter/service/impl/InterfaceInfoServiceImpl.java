@@ -3,12 +3,12 @@ import java.util.List;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.decade.hapicommon.model.domain.InterfaceInfo;
 import com.decade.usercenter.common.ErrorCode;
 import com.decade.usercenter.constant.CommonConstant;
 import com.decade.usercenter.exception.BusinessException;
 import com.decade.usercenter.exception.ThrowUtils;
 import com.decade.usercenter.mapper.InterfaceInfoMapper;
-import com.decade.usercenter.model.domain.InterfaceInfo;
 import com.decade.usercenter.model.dto.InterfaceInfo.InterfaceInfoQueryRequest;
 import com.decade.usercenter.service.InterfaceInfoService;
 import com.decade.usercenter.utils.SqlUtils;

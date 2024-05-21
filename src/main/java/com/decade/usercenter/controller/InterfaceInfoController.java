@@ -4,6 +4,8 @@ package com.decade.usercenter.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.decade.apiassignclientsdk.client.HapiClient;
 import com.decade.apiassignclientsdk.model.Someting;
+import com.decade.hapicommon.model.domain.InterfaceInfo;
+import com.decade.hapicommon.model.domain.User;
 import com.decade.usercenter.annotation.CheckAuth;
 import com.decade.usercenter.common.IdRequest;
 import com.decade.usercenter.common.ResponseUtil;
@@ -21,8 +23,6 @@ import com.decade.usercenter.common.DeleteRequest;
 import com.decade.usercenter.common.ErrorCode;
 import com.decade.usercenter.exception.BusinessException;
 import com.decade.usercenter.exception.ThrowUtils;
-import com.decade.usercenter.model.domain.InterfaceInfo;
-import com.decade.usercenter.model.domain.User;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -259,11 +259,10 @@ public class InterfaceInfoController {
                 "接口不存在或者接口已关闭");
         //todo: 简单模拟一下调用，后面再改成专门的调用方式,以及，getLoginUser方法
         User currentUser = userService.getCurrentUser(request);
-        HapiClient hapiClient1 = new HapiClient("abcdefg", currentUser.getAccessKey());
         String result = null;
         try {
             Someting someting = GSON.fromJson(invokeRequest.getUserRequestParams(), Someting.class);
-            result = hapiClient1.doSomething(someting);
+            result = hapiClient.doSomething(someting);
         } catch (Exception e) {
             throw new BusinessException(ErrorCode.INVALID_PARAMS, "请求参数有问题，请检查");
         }

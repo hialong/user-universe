@@ -1,8 +1,7 @@
 package com.decade.usercenter.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.decade.usercenter.model.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.decade.hapicommon.model.domain.User;
 import com.github.pagehelper.PageInfo;
 import jakarta.servlet.http.HttpServletRequest;
 

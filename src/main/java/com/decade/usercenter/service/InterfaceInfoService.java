@@ -2,7 +2,7 @@ package com.decade.usercenter.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.decade.usercenter.model.domain.InterfaceInfo;
+import com.decade.hapicommon.model.domain.InterfaceInfo;
 import com.decade.usercenter.model.dto.InterfaceInfo.InterfaceInfoQueryRequest;
 
 

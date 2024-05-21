@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.decade.usercenter.mapper.UserMapper">
 
-    <resultMap id="BaseResultMap" type="com.decade.usercenter.model.domain.User">
+    <resultMap id="BaseResultMap" type="com.decade.hapicommon.model.domain.User">
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="userName" column="userName" jdbcType="VARCHAR"/>
             <result property="userAccount" column="userAccount" jdbcType="VARCHAR"/>
@@ -34,7 +34,7 @@
         accessKey,seceretKey,extend_3
     </sql>
 
-    <select id="findUserByPage" resultType="com.decade.usercenter.model.domain.User">
+    <select id="findUserByPage" resultType="com.decade.hapicommon.model.domain.User">
         select id,userName,userAccount,gender,avatarUrl,phone,email,userStatus,userRole,specialCode,score,createTime,updateTime from
         user where flag != 1
         <if test="userName != null and userName != ''">

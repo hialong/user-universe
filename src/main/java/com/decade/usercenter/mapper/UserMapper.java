@@ -1,7 +1,7 @@
 package com.decade.usercenter.mapper;
 
-import com.decade.usercenter.model.domain.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.decade.hapicommon.model.domain.User;
 
 
 import java.util.List;

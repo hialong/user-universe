@@ -4,6 +4,8 @@ package com.decade.usercenter.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.decade.apiassignclientsdk.client.HapiClient;
 
+import com.decade.hapicommon.model.domain.User;
+import com.decade.hapicommon.model.domain.UserInterfaceInfo;
 import com.decade.usercenter.annotation.CheckAuth;
 import com.decade.usercenter.common.BaseResponse;
 import com.decade.usercenter.common.DeleteRequest;
@@ -12,8 +14,6 @@ import com.decade.usercenter.common.ResponseUtil;
 import com.decade.usercenter.constant.UserConstant;
 import com.decade.usercenter.exception.BusinessException;
 import com.decade.usercenter.exception.ThrowUtils;
-import com.decade.usercenter.model.domain.UserInterfaceInfo;
-import com.decade.usercenter.model.domain.User;
 import com.decade.usercenter.model.dto.userInterfaceInfo.UserInterfaceInfoAddRequest;
 import com.decade.usercenter.model.dto.userInterfaceInfo.UserInterfaceInfoQueryRequest;
 import com.decade.usercenter.model.dto.userInterfaceInfo.UserInterfaceInfoUpdateRequest;

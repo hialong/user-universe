@@ -5,12 +5,11 @@ import cn.hutool.crypto.digest.DigestUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.decade.hapicommon.model.domain.User;
 import com.decade.usercenter.common.ErrorCode;
-import com.decade.usercenter.common.ResponseUtil;
 import com.decade.usercenter.constant.UserConstant;
 import com.decade.usercenter.enums.UserRoleEnum;
 import com.decade.usercenter.exception.BusinessException;
-import com.decade.usercenter.model.domain.User;
 import com.decade.usercenter.service.UserService;
 import com.decade.usercenter.mapper.UserMapper;
 

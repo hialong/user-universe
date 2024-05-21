@@ -1,8 +1,9 @@
 package com.decade.usercenter.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.decade.usercenter.model.domain.UserInterfaceInfo;
+
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.decade.hapicommon.model.domain.UserInterfaceInfo;
 import com.decade.usercenter.model.dto.userInterfaceInfo.UserInterfaceInfoQueryRequest;
 
 /**

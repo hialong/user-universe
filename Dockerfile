@@ -9,16 +9,12 @@ LABEL name=bkp description="jdk21 base on alpine image"
 RUN apk add --no-cache --no-cache openjdk21
 
 #安装maven
-RUN apk add --no-cache --no-cache maven
-COPY settings.xml /usr/share/java/maven-3/conf/settings.xml
+#RUN apk add --no-cache --no-cache maven
+#COPY settings.xml /usr/share/java/maven-3/conf/settings.xml
 
 # Copy local code to the container image.
-WORKDIR /app
-COPY pom.xml .
-COPY src ./src
+ADD user-center-backend-0.0.1-SNAPSHOT.jar app.jar
 
-# Build a release artifact.
-RUN mvn package -DskipTests
 
 # Run the web service on container startup.
-CMD ["java","-jar","/app/target/user-center-backend-0.0.1-SNAPSHOT.jar","--spring.profiles.active=prod"]
+CMD ["java","-jar","/app.jar","--spring.profiles.active=prod"]

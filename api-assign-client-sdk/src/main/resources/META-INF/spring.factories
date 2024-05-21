@@ -1,0 +1,2 @@
+# 这个的作用是讲这个类识别为自动配置类，并且会自动加载里面的配置
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.decade.apiassignclientsdk.ApiAssignClientSDKConfig

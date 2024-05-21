@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: spring-cloud-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: path_route
+          uri: http://localhost:8126
+          predicates:
+            - Path=/api/**
+server:
+  port: 9991
+logging:
+  level:
+    org.springframework.cloud.gateway: trace
+dubbo:
+  application:
+    name: dubbo-springboot-demo-consumer
+    logger: slf4j
+    qos-port: 33333
+  registry:
+    address: nacos://${nacos.address:127.0.0.1}:8848?username=nacos&password=nacos

@@ -1,6 +1,9 @@
 package com.decade.usercenter.service.impl;
 
-import com.decade.usercenter.service.UserInterfaceInfoService;
+
+
+import com.decade.hapicommon.service.UserInterfaceInfoCommonService;
+
 import jakarta.annotation.Resource;
 
 import org.junit.jupiter.api.Test;
@@ -12,11 +15,11 @@ import static org.junit.Assert.*;
 public class UserInterfaceInfoServiceImplTest {
 
     @Resource
-    private UserInterfaceInfoService userInterfaceInfoService;
+    private UserInterfaceInfoCommonService userInterfaceInfoCommonService;
 
     @Test
     public void invokeCount() {
-        boolean b = userInterfaceInfoService.invokeCount(1L, 4L);
+        boolean b = userInterfaceInfoCommonService.invokeCount(1L, 4L);
         assertTrue(b);
     }
 }

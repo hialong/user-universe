@@ -1,6 +1,7 @@
 package com.decade.usercenter.utils;
-import com.decade.usercenter.model.domain.User;
 
+
+import com.decade.hapicommon.model.domain.User;
 
 public class UserUtil {
 

@@ -1,12 +1,12 @@
 package com.decade.usercenter.aop;
 
+import com.decade.hapicommon.model.domain.User;
 import com.decade.usercenter.annotation.CheckAuth;
 import com.decade.usercenter.common.ErrorCode;
 import com.decade.usercenter.constant.UserConstant;
 import com.decade.usercenter.enums.UserRoleEnum;
 import com.decade.usercenter.exception.BusinessException;
 import com.decade.usercenter.exception.ThrowUtils;
-import com.decade.usercenter.model.domain.User;
 import com.decade.usercenter.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
